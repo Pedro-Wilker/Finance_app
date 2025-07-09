@@ -34,6 +34,15 @@ class Database:
             )
             """,
             """
+            ALTER TABLE usuarios
+            ADD COLUMN IF NOT EXISTS idade INTEGER,
+            ADD COLUMN IF NOT EXISTS email VARCHAR(100) UNIQUE,
+            ADD COLUMN IF NOT EXISTS senha VARCHAR(100),
+            ADD COLUMN IF NOT EXISTS numero VARCHAR(20),
+            ADD COLUMN IF NOT EXISTS salario DECIMAL(10, 2),
+            ADD COLUMN IF NOT EXISTS profissao VARCHAR(100)
+            """,
+            """
             CREATE TABLE IF NOT EXISTS categorias (
                 id SERIAL PRIMARY KEY,
                 nome VARCHAR(50) NOT NULL,

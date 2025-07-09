@@ -12,7 +12,10 @@ class FinanceApp:
         self.root = root
         self.root.title("Gestão de Finanças Pessoais")
         ctk.set_appearance_mode("dark")
-        ctk.set_default_color_theme("blue")
+        ctk.set_default_color_theme("dark-blue")  # Tema moderno
+        self.root.minsize(800, 600)  # Tamanho mínimo da janela
+        self.root.grid_rowconfigure(0, weight=1)
+        self.root.grid_columnconfigure(0, weight=1)
         self.db = Database()
         self.usuario_id = None
         self.show_login_screen()
@@ -23,19 +26,21 @@ class FinanceApp:
 
     def show_login_screen(self):
         self.clear_frame()
-        self.frame = ctk.CTkFrame(self.root)
-        self.frame.pack(pady=20, padx=20, fill="both")
+        self.frame = ctk.CTkFrame(self.root, corner_radius=15)
+        self.frame.grid(row=0, column=0, sticky="nsew", padx=20, pady=20)
+        self.frame.grid_rowconfigure(0, weight=1)
+        self.frame.grid_columnconfigure(0, weight=1)
 
-        ctk.CTkLabel(self.frame, text="Login").grid(row=0, column=0, columnspan=2, pady=10)
-        ctk.CTkLabel(self.frame, text="Email").grid(row=1, column=0, padx=5)
-        self.email_entry = ctk.CTkEntry(self.frame, placeholder_text="Email")
-        self.email_entry.grid(row=1, column=1, padx=5, pady=5)
-        ctk.CTkLabel(self.frame, text="Senha").grid(row=2, column=0, padx=5)
-        self.senha_entry = ctk.CTkEntry(self.frame, placeholder_text="Senha", show="*")
-        self.senha_entry.grid(row=2, column=1, padx=5, pady=5)
+        ctk.CTkLabel(self.frame, text="Login", font=("Roboto", 24, "bold")).pack(pady=20)
+        ctk.CTkLabel(self.frame, text="Email", font=("Roboto", 16)).pack(pady=5)
+        self.email_entry = ctk.CTkEntry(self.frame, placeholder_text="Email", width=400, height=40, corner_radius=10)
+        self.email_entry.pack(pady=10)
+        ctk.CTkLabel(self.frame, text="Senha", font=("Roboto", 16)).pack(pady=5)
+        self.senha_entry = ctk.CTkEntry(self.frame, placeholder_text="Senha", show="*", width=400, height=40, corner_radius=10)
+        self.senha_entry.pack(pady=10)
 
-        ctk.CTkButton(self.frame, text="Entrar", command=self.autenticar).grid(row=3, column=0, columnspan=2, pady=10)
-        ctk.CTkButton(self.frame, text="Cadastrar", command=self.show_cadastro_screen1).grid(row=4, column=0, columnspan=2, pady=5)
+        ctk.CTkButton(self.frame, text="Entrar", command=self.autenticar, width=200, height=40, corner_radius=10, font=("Roboto", 16)).pack(pady=15)
+        ctk.CTkButton(self.frame, text="Cadastrar", command=self.show_cadastro_screen1, width=200, height=40, corner_radius=10, font=("Roboto", 16)).pack(pady=10)
 
     def autenticar(self):
         email = self.email_entry.get()
@@ -47,28 +52,30 @@ class FinanceApp:
             self.setup_categorias()
             self.show_main_screen()
         else:
-            print("Erro: Email ou senha incorretos.")
+            ctk.CTkLabel(self.frame, text="Erro: Email ou senha incorretos.", text_color="red", font=("Roboto", 14)).pack(pady=5)
 
     def show_cadastro_screen1(self):
         self.clear_frame()
-        self.frame = ctk.CTkFrame(self.root)
-        self.frame.pack(pady=20, padx=20, fill="both")
+        self.frame = ctk.CTkFrame(self.root, corner_radius=15)
+        self.frame.grid(row=0, column=0, sticky="nsew", padx=20, pady=20)
+        self.frame.grid_rowconfigure(0, weight=1)
+        self.frame.grid_columnconfigure(0, weight=1)
 
-        ctk.CTkLabel(self.frame, text="Cadastro - Etapa 1").grid(row=0, column=0, columnspan=2, pady=10)
-        ctk.CTkLabel(self.frame, text="Nome").grid(row=1, column=0, padx=5)
-        self.nome_entry = ctk.CTkEntry(self.frame, placeholder_text="Nome")
-        self.nome_entry.grid(row=1, column=1, padx=5, pady=5)
-        ctk.CTkLabel(self.frame, text="Idade").grid(row=2, column=0, padx=5)
-        self.idade_entry = ctk.CTkEntry(self.frame, placeholder_text="Idade")
-        self.idade_entry.grid(row=2, column=1, padx=5, pady=5)
-        ctk.CTkLabel(self.frame, text="Email").grid(row=3, column=0, padx=5)
-        self.email_entry = ctk.CTkEntry(self.frame, placeholder_text="Email")
-        self.email_entry.grid(row=3, column=1, padx=5, pady=5)
-        ctk.CTkLabel(self.frame, text="Senha").grid(row=4, column=0, padx=5)
-        self.senha_entry = ctk.CTkEntry(self.frame, placeholder_text="Senha", show="*")
-        self.senha_entry.grid(row=4, column=1, padx=5, pady=5)
+        ctk.CTkLabel(self.frame, text="Cadastro - Etapa 1", font=("Roboto", 24, "bold")).pack(pady=20)
+        ctk.CTkLabel(self.frame, text="Nome", font=("Roboto", 16)).pack(pady=5)
+        self.nome_entry = ctk.CTkEntry(self.frame, placeholder_text="Nome", width=400, height=40, corner_radius=10)
+        self.nome_entry.pack(pady=10)
+        ctk.CTkLabel(self.frame, text="Idade", font=("Roboto", 16)).pack(pady=5)
+        self.idade_entry = ctk.CTkEntry(self.frame, placeholder_text="Idade", width=400, height=40, corner_radius=10)
+        self.idade_entry.pack(pady=10)
+        ctk.CTkLabel(self.frame, text="Email", font=("Roboto", 16)).pack(pady=5)
+        self.email_entry = ctk.CTkEntry(self.frame, placeholder_text="Email", width=400, height=40, corner_radius=10)
+        self.email_entry.pack(pady=10)
+        ctk.CTkLabel(self.frame, text="Senha", font=("Roboto", 16)).pack(pady=5)
+        self.senha_entry = ctk.CTkEntry(self.frame, placeholder_text="Senha", show="*", width=400, height=40, corner_radius=10)
+        self.senha_entry.pack(pady=10)
 
-        ctk.CTkButton(self.frame, text="Próximo", command=self.show_cadastro_screen2).grid(row=5, column=0, columnspan=2, pady=10)
+        ctk.CTkButton(self.frame, text="Próximo", command=self.show_cadastro_screen2, width=200, height=40, corner_radius=10, font=("Roboto", 16)).pack(pady=15)
 
     def show_cadastro_screen2(self):
         try:
@@ -78,25 +85,27 @@ class FinanceApp:
             senha = self.senha_entry.get()
             self.usuario_id = self.db.insert_usuario(nome, idade, email, senha)
             self.clear_frame()
-            self.frame = ctk.CTkFrame(self.root)
-            self.frame.pack(pady=20, padx=20, fill="both")
+            self.frame = ctk.CTkFrame(self.root, corner_radius=15)
+            self.frame.grid(row=0, column=0, sticky="nsew", padx=20, pady=20)
+            self.frame.grid_rowconfigure(0, weight=1)
+            self.frame.grid_columnconfigure(0, weight=1)
 
-            ctk.CTkLabel(self.frame, text="Cadastro - Etapa 2").grid(row=0, column=0, columnspan=2, pady=10)
-            ctk.CTkLabel(self.frame, text="Número").grid(row=1, column=0, padx=5)
-            self.numero_entry = ctk.CTkEntry(self.frame, placeholder_text="Número")
-            self.numero_entry.grid(row=1, column=1, padx=5, pady=5)
-            ctk.CTkLabel(self.frame, text="Salário").grid(row=2, column=0, padx=5)
-            self.salario_entry = ctk.CTkEntry(self.frame, placeholder_text="Salário")
-            self.salario_entry.grid(row=2, column=1, padx=5, pady=5)
-            ctk.CTkLabel(self.frame, text="Profissão").grid(row=3, column=0, padx=5)
-            self.profissao_entry = ctk.CTkEntry(self.frame, placeholder_text="Profissão")
-            self.profissao_entry.grid(row=3, column=1, padx=5, pady=5)
+            ctk.CTkLabel(self.frame, text="Cadastro - Etapa 2", font=("Roboto", 24, "bold")).pack(pady=20)
+            ctk.CTkLabel(self.frame, text="Número", font=("Roboto", 16)).pack(pady=5)
+            self.numero_entry = ctk.CTkEntry(self.frame, placeholder_text="Número", width=400, height=40, corner_radius=10)
+            self.numero_entry.pack(pady=10)
+            ctk.CTkLabel(self.frame, text="Salário", font=("Roboto", 16)).pack(pady=5)
+            self.salario_entry = ctk.CTkEntry(self.frame, placeholder_text="Salário", width=400, height=40, corner_radius=10)
+            self.salario_entry.pack(pady=10)
+            ctk.CTkLabel(self.frame, text="Profissão", font=("Roboto", 16)).pack(pady=5)
+            self.profissao_entry = ctk.CTkEntry(self.frame, placeholder_text="Profissão", width=400, height=40, corner_radius=10)
+            self.profissao_entry.pack(pady=10)
 
-            ctk.CTkButton(self.frame, text="Finalizar", command=self.finalizar_cadastro).grid(row=4, column=0, columnspan=2, pady=10)
+            ctk.CTkButton(self.frame, text="Finalizar", command=self.finalizar_cadastro, width=200, height=40, corner_radius=10, font=("Roboto", 16)).pack(pady=15)
         except ValueError as e:
-            print("Erro: Idade deve ser um número.", e)
+            ctk.CTkLabel(self.frame, text="Erro: Idade deve ser um número.", text_color="red", font=("Roboto", 14)).pack(pady=5)
         except Exception as e:
-            print("Erro ao cadastrar usuário:", e)
+            ctk.CTkLabel(self.frame, text=f"Erro ao cadastrar usuário: {e}", text_color="red", font=("Roboto", 14)).pack(pady=5)
 
     def finalizar_cadastro(self):
         try:
@@ -104,13 +113,13 @@ class FinanceApp:
             salario = float(self.salario_entry.get()) if self.salario_entry.get() else None
             profissao = self.profissao_entry.get()
             self.db.update_usuario(self.usuario_id, numero, salario, profissao)
-            print("Cadastro concluído com sucesso!")
+            ctk.CTkLabel(self.frame, text="Cadastro concluído com sucesso!", text_color="green", font=("Roboto", 14)).pack(pady=5)
             self.setup_categorias()
             self.show_main_screen()
         except ValueError as e:
-            print("Erro: Salário deve ser um número.", e)
+            ctk.CTkLabel(self.frame, text="Erro: Salário deve ser um número.", text_color="red", font=("Roboto", 14)).pack(pady=5)
         except Exception as e:
-            print("Erro ao finalizar cadastro:", e)
+            ctk.CTkLabel(self.frame, text=f"Erro ao finalizar cadastro: {e}", text_color="red", font=("Roboto", 14)).pack(pady=5)
 
     def setup_categorias(self):
         categorias = [
@@ -123,56 +132,71 @@ class FinanceApp:
 
     def show_main_screen(self):
         self.clear_frame()
-        self.frame = ctk.CTkFrame(self.root)
-        self.frame.pack(pady=20, padx=20, fill="both")
+        self.frame = ctk.CTkFrame(self.root, corner_radius=15)
+        self.frame.grid(row=0, column=0, sticky="nsew", padx=20, pady=20)
+        self.frame.grid_rowconfigure(0, weight=1)
+        self.frame.grid_columnconfigure(0, weight=1)
 
         # Formulário de Transações
-        self.valor_entry = ctk.CTkEntry(self.frame, placeholder_text="Valor")
-        self.valor_entry.grid(row=0, column=0, padx=5, pady=5)
-        self.descricao_entry = ctk.CTkEntry(self.frame, placeholder_text="Descrição")
-        self.descricao_entry.grid(row=0, column=1, padx=5, pady=5)
-        self.data_entry = ctk.CTkEntry(self.frame, placeholder_text="Data (YYYY-MM-DD)")
-        self.data_entry.grid(row=0, column=2, padx=5, pady=5)
+        ctk.CTkLabel(self.frame, text="Nova Transação", font=("Roboto", 20, "bold")).pack(pady=10)
+        self.valor_entry = ctk.CTkEntry(self.frame, placeholder_text="Valor", width=400, height=40, corner_radius=10)
+        self.valor_entry.pack(pady=10)
+        self.descricao_entry = ctk.CTkEntry(self.frame, placeholder_text="Descrição", width=400, height=40, corner_radius=10)
+        self.descricao_entry.pack(pady=10)
+
+        # Seletores de Data
+        ctk.CTkLabel(self.frame, text="Data", font=("Roboto", 16)).pack(pady=5)
+        data_frame = ctk.CTkFrame(self.frame)
+        data_frame.pack(pady=5)
+        self.dia_var = ctk.StringVar(value="1")
+        self.mes_var = ctk.StringVar(value="1")
+        self.ano_var = ctk.StringVar(value="2025")
+        dias = [str(i) for i in range(1, 32)]
+        meses = [str(i) for i in range(1, 13)]
+        anos = [str(i) for i in range(2020, 2031)]
+        ctk.CTkOptionMenu(data_frame, values=dias, variable=self.dia_var, width=100, height=40, corner_radius=10).pack(side="left", padx=5)
+        ctk.CTkOptionMenu(data_frame, values=meses, variable=self.mes_var, width=100, height=40, corner_radius=10).pack(side="left", padx=5)
+        ctk.CTkOptionMenu(data_frame, values=anos, variable=self.ano_var, width=100, height=40, corner_radius=10).pack(side="left", padx=5)
 
         self.categoria_var = ctk.StringVar()
         categorias = self.db.get_categorias()
-        self.categoria_menu = ctk.CTkOptionMenu(self.frame, values=[f"{c[1]} ({c[2]})" for c in categorias])
-        self.categoria_menu.grid(row=0, column=3, padx=5, pady=5)
+        self.categoria_menu = ctk.CTkOptionMenu(self.frame, values=[f"{c[1]} ({c[2]})" for c in categorias], width=400, height=40, corner_radius=10)
+        self.categoria_menu.pack(pady=10)
 
-        self.add_button = ctk.CTkButton(self.frame, text="Adicionar", command=self.add_transacao)
-        self.add_button.grid(row=0, column=4, padx=5, pady=5)
+        ctk.CTkButton(self.frame, text="Adicionar Transação", command=self.add_transacao, width=200, height=40, corner_radius=10, font=("Roboto", 16)).pack(pady=10)
 
         # Exclusão de Transações
-        ctk.CTkLabel(self.frame, text="ID da Transação para Excluir").grid(row=1, column=0, padx=5, pady=5)
-        self.delete_id_entry = ctk.CTkEntry(self.frame, placeholder_text="ID")
-        self.delete_id_entry.grid(row=1, column=1, padx=5, pady=5)
-        self.delete_button = ctk.CTkButton(self.frame, text="Excluir", command=self.delete_transacao)
-        self.delete_button.grid(row=1, column=2, padx=5, pady=5)
+        ctk.CTkLabel(self.frame, text="Excluir Transação", font=("Roboto", 16)).pack(pady=10)
+        self.delete_id_entry = ctk.CTkEntry(self.frame, placeholder_text="ID da Transação", width=400, height=40, corner_radius=10)
+        self.delete_id_entry.pack(pady=10)
+        ctk.CTkButton(self.frame, text="Excluir", command=self.delete_transacao, width=200, height=40, corner_radius=10, font=("Roboto", 16)).pack(pady=10)
 
         # Tabela de Transações
-        self.transacoes_label = ctk.CTkLabel(self.frame, text="Transações")
-        self.transacoes_label.grid(row=2, column=0, columnspan=5, pady=10)
-        self.transacoes_text = ctk.CTkTextbox(self.frame, height=200, width=600)
-        self.transacoes_text.grid(row=3, column=0, columnspan=5, pady=5)
+        ctk.CTkLabel(self.frame, text="Transações", font=("Roboto", 20, "bold")).pack(pady=10)
+        self.transacoes_text = ctk.CTkTextbox(self.frame, height=300, width=600, corner_radius=10)
+        self.transacoes_text.pack(pady=10)
         self.update_transacoes()
 
         # Relatório e Gráfico
-        self.grafico_button = ctk.CTkButton(self.frame, text="Exibir Gráfico", command=self.show_grafico)
-        self.grafico_button.grid(row=4, column=0, padx=5, pady=5)
-        self.relatorio_button = ctk.CTkButton(self.frame, text="Gerar Relatório Mensal", command=self.gerar_relatorio)
-        self.relatorio_button.grid(row=4, column=1, padx=5, pady=5)
-        ctk.CTkLabel(self.frame, text="Mês (MM)").grid(row=4, column=2, padx=5, pady=5)
-        self.mes_entry = ctk.CTkEntry(self.frame, placeholder_text="Mês")
-        self.mes_entry.grid(row=4, column=3, padx=5, pady=5)
-        ctk.CTkLabel(self.frame, text="Ano (YYYY)").grid(row=4, column=4, padx=5, pady=5)
-        self.ano_entry = ctk.CTkEntry(self.frame, placeholder_text="Ano")
-        self.ano_entry.grid(row=4, column=5, padx=5, pady=5)
+        buttons_frame = ctk.CTkFrame(self.frame)
+        buttons_frame.pack(pady=10)
+        ctk.CTkButton(buttons_frame, text="Exibir Gráfico", command=self.show_grafico, width=150, height=40, corner_radius=10, font=("Roboto", 16)).pack(side="left", padx=10)
+        ctk.CTkButton(buttons_frame, text="Gerar Relatório Mensal", command=self.gerar_relatorio, width=150, height=40, corner_radius=10, font=("Roboto", 16)).pack(side="left", padx=10)
+        ctk.CTkLabel(buttons_frame, text="Mês (MM)", font=("Roboto", 14)).pack(side="left", padx=10)
+        self.mes_entry = ctk.CTkEntry(buttons_frame, placeholder_text="Mês", width=100, height=40, corner_radius=10)
+        self.mes_entry.pack(side="left", padx=10)
+        ctk.CTkLabel(buttons_frame, text="Ano (YYYY)", font=("Roboto", 14)).pack(side="left", padx=10)
+        self.ano_entry = ctk.CTkEntry(buttons_frame, placeholder_text="Ano", width=100, height=40, corner_radius=10)
+        self.ano_entry.pack(side="left", padx=10)
 
     def add_transacao(self):
         try:
             valor = float(self.valor_entry.get())
             descricao = self.descricao_entry.get()
-            data = datetime.strptime(self.data_entry.get(), "%Y-%m-%d").date()
+            dia = int(self.dia_var.get())
+            mes = int(self.mes_var.get())
+            ano = int(self.ano_var.get())
+            data = datetime(ano, mes, dia).date()
             categoria_nome = self.categoria_menu.get().split(" (")[0]
             categorias = self.db.get_categorias()
             categoria_id = next(c[0] for c in categorias if c[1] == categoria_nome)
@@ -180,11 +204,14 @@ class FinanceApp:
             self.update_transacoes()
             self.valor_entry.delete(0, "end")
             self.descricao_entry.delete(0, "end")
-            self.data_entry.delete(0, "end")
+            self.dia_var.set("1")
+            self.mes_var.set("1")
+            self.ano_var.set("2025")
+            ctk.CTkLabel(self.frame, text="Transação adicionada com sucesso!", text_color="green", font=("Roboto", 14)).pack(pady=5)
         except ValueError as e:
-            print("Erro ao adicionar transação: Valor ou data inválidos.", e)
+            ctk.CTkLabel(self.frame, text="Erro: Valor ou data inválidos.", text_color="red", font=("Roboto", 14)).pack(pady=5)
         except Exception as e:
-            print("Erro ao adicionar transação:", e)
+            ctk.CTkLabel(self.frame, text=f"Erro ao adicionar transação: {e}", text_color="red", font=("Roboto", 14)).pack(pady=5)
 
     def delete_transacao(self):
         try:
@@ -192,11 +219,11 @@ class FinanceApp:
             self.db.delete_transacao(transacao_id)
             self.update_transacoes()
             self.delete_id_entry.delete(0, "end")
-            print("Transação excluída com sucesso!")
+            ctk.CTkLabel(self.frame, text="Transação excluída com sucesso!", text_color="green", font=("Roboto", 14)).pack(pady=5)
         except ValueError as e:
-            print("Erro: ID inválido.", e)
+            ctk.CTkLabel(self.frame, text="Erro: ID inválido.", text_color="red", font=("Roboto", 14)).pack(pady=5)
         except Exception as e:
-            print("Erro ao excluir transação:", e)
+            ctk.CTkLabel(self.frame, text=f"Erro ao excluir transação: {e}", text_color="red", font=("Roboto", 14)).pack(pady=5)
 
     def update_transacoes(self):
         self.transacoes_text.delete("1.0", "end")
@@ -210,11 +237,11 @@ class FinanceApp:
         df_despesas = df[df["tipo"] == "Despesa"]
         df_receitas = df[df["tipo"] == "Receita"]
 
-        fig, ax = plt.subplots()
+        fig, ax = plt.subplots(figsize=(8, 6))
         df_despesas.groupby("categoria")["valor"].sum().plot(kind="pie", ax=ax, title="Despesas por Categoria")
         canvas = FigureCanvasTkAgg(fig, master=self.frame)
         canvas.draw()
-        canvas.get_tk_widget().grid(row=5, column=0, columnspan=5, pady=10)
+        canvas.get_tk_widget().pack(pady=10)
 
     def gerar_relatorio(self):
         try:
@@ -235,19 +262,18 @@ class FinanceApp:
             relatorio_texto += f"Total de Despesas: R${total_despesas:.2f}\n"
             relatorio_texto += f"Saldo: R${saldo:.2f}\n"
 
-            # Exibir relatório
             relatorio_window = ctk.CTkToplevel(self.root)
             relatorio_window.title(f"Relatório {mes:02d}/{ano}")
-            ctk.CTkLabel(relatorio_window, text=relatorio_texto).pack(pady=10, padx=10)
+            relatorio_window.minsize(600, 400)
+            ctk.CTkLabel(relatorio_window, text=relatorio_texto, font=("Roboto", 14), justify="left").pack(pady=20, padx=20)
 
-            # Enviar por email
-            email = self.db.cursor.execute("SELECT email FROM usuarios WHERE id = %s", (self.usuario_id,))
+            self.db.cursor.execute("SELECT email FROM usuarios WHERE id = %s", (self.usuario_id,))
             email = self.db.cursor.fetchone()[0]
             self.enviar_email(email, relatorio_texto, mes, ano)
         except ValueError as e:
-            print("Erro: Mês ou ano inválidos.", e)
+            ctk.CTkLabel(self.frame, text="Erro: Mês ou ano inválidos.", text_color="red", font=("Roboto", 14)).pack(pady=5)
         except Exception as e:
-            print("Erro ao gerar relatório:", e)
+            ctk.CTkLabel(self.frame, text=f"Erro ao gerar relatório: {e}", text_color="red", font=("Roboto", 14)).pack(pady=5)
 
     def enviar_email(self, destinatario, relatorio_texto, mes, ano):
         try:
@@ -262,9 +288,9 @@ class FinanceApp:
                 server.starttls()
                 server.login(remetente, senha)
                 server.sendmail(remetente, destinatario, msg.as_string())
-            print("Relatório enviado por email com sucesso!")
+            ctk.CTkLabel(self.frame, text="Relatório enviado por email com sucesso!", text_color="green", font=("Roboto", 14)).pack(pady=5)
         except Exception as e:
-            print("Erro ao enviar email:", e)
+            ctk.CTkLabel(self.frame, text=f"Erro ao enviar email: {e}", text_color="red", font=("Roboto", 14)).pack(pady=5)
 
     def __del__(self):
         self.db.close()
