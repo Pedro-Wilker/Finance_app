@@ -58,6 +58,27 @@ class Database:
                 categoria_id INTEGER REFERENCES categorias(id),
                 usuario_id INTEGER REFERENCES usuarios(id)
             )
+            """,
+            """
+            CREATE TABLE IF NOT EXISTS custos_ganhos_fixos (
+                id SERIAL PRIMARY KEY,
+                valor DECIMAL(10, 2) NOT NULL,
+                descricao TEXT,
+                categoria_id INTEGER REFERENCES categorias(id),
+                usuario_id INTEGER REFERENCES usuarios(id),
+                tipo VARCHAR(20) NOT NULL,
+                dia INTEGER NOT NULL
+            )
+            """,
+            """
+            CREATE TABLE IF NOT EXISTS apostas (
+                id SERIAL PRIMARY KEY,
+                jogo VARCHAR(100) NOT NULL,
+                valor_apostado DECIMAL(10, 2) NOT NULL,
+                resultado VARCHAR(20) NOT NULL,
+                data DATE NOT NULL,
+                usuario_id INTEGER REFERENCES usuarios(id)
+            )
             """
         )
         try:
@@ -97,6 +118,18 @@ class Database:
         self.cursor.execute(sql, (valor, descricao, data, categoria_id, usuario_id))
         self.connection.commit()
 
+    def insert_custo_ganho_fixo(self, valor, descricao, categoria_id, usuario_id, tipo, dia):
+        sql = """INSERT INTO custos_ganhos_fixos (valor, descricao, categoria_id, usuario_id, tipo, dia)
+                 VALUES (%s, %s, %s, %s, %s, %s)"""
+        self.cursor.execute(sql, (valor, descricao, categoria_id, usuario_id, tipo, dia))
+        self.connection.commit()
+
+    def insert_aposta(self, jogo, valor_apostado, resultado, data, usuario_id):
+        sql = """INSERT INTO apostas (jogo, valor_apostado, resultado, data, usuario_id)
+                 VALUES (%s, %s, %s, %s, %s)"""
+        self.cursor.execute(sql, (jogo, valor_apostado, resultado, data, usuario_id))
+        self.connection.commit()
+
     def delete_transacao(self, transacao_id):
         sql = "DELETE FROM transacoes WHERE id = %s"
         self.cursor.execute(sql, (transacao_id,))
@@ -110,13 +143,19 @@ class Database:
         self.cursor.execute(sql, (usuario_id,))
         return self.cursor.fetchall()
 
-    def get_categorias(self, tipo=None):
-        if tipo:
-            sql = "SELECT id, nome FROM categorias WHERE tipo = %s"
-            self.cursor.execute(sql, (tipo,))
-        else:
-            sql = "SELECT id, nome, tipo FROM categorias"
-            self.cursor.execute(sql)
+    def get_custos_ganhos_fixos(self, usuario_id):
+        sql = """SELECT cgf.id, cgf.valor, cgf.descricao, cgf.dia, c.nome, cgf.tipo
+                 FROM custos_ganhos_fixos cgf
+                 JOIN categorias c ON cgf.categoria_id = c.id
+                 WHERE cgf.usuario_id = %s"""
+        self.cursor.execute(sql, (usuario_id,))
+        return self.cursor.fetchall()
+
+    def get_apostas(self, usuario_id):
+        sql = """SELECT id, jogo, valor_apostado, resultado, data
+                 FROM apostas
+                 WHERE usuario_id = %s"""
+        self.cursor.execute(sql, (usuario_id,))
         return self.cursor.fetchall()
 
     def get_relatorio_mensal(self, usuario_id, ano, mes):
@@ -126,6 +165,43 @@ class Database:
                  WHERE t.usuario_id = %s AND EXTRACT(YEAR FROM t.data) = %s AND EXTRACT(MONTH FROM t.data) = %s
                  GROUP BY c.nome, c.tipo"""
         self.cursor.execute(sql, (usuario_id, ano, mes))
+        return self.cursor.fetchall()
+
+    def get_resumo_mensal(self, usuario_id, ano, mes):
+        # Transações normais
+        sql_transacoes = """SELECT c.tipo, SUM(t.valor) as total
+                            FROM transacoes t
+                            JOIN categorias c ON t.categoria_id = c.id
+                            WHERE t.usuario_id = %s AND EXTRACT(YEAR FROM t.data) = %s AND EXTRACT(MONTH FROM t.data) = %s
+                            GROUP BY c.tipo"""
+        self.cursor.execute(sql_transacoes, (usuario_id, ano, mes))
+        transacoes = self.cursor.fetchall()
+
+        # Custos e ganhos fixos
+        sql_fixos = """SELECT cgf.tipo, SUM(cgf.valor) as total
+                       FROM custos_ganhos_fixos cgf
+                       WHERE cgf.usuario_id = %s
+                       GROUP BY cgf.tipo"""
+        self.cursor.execute(sql_fixos, (usuario_id,))
+        fixos = self.cursor.fetchall()
+
+        # Apostas
+        sql_apostas = """SELECT resultado, SUM(valor_apostado) as total
+                         FROM apostas
+                         WHERE usuario_id = %s AND EXTRACT(YEAR FROM data) = %s AND EXTRACT(MONTH FROM data) = %s
+                         GROUP BY resultado"""
+        self.cursor.execute(sql_apostas, (usuario_id, ano, mes))
+        apostas = self.cursor.fetchall()
+
+        return transacoes, fixos, apostas
+
+    def get_categorias(self, tipo=None):
+        if tipo:
+            sql = "SELECT id, nome FROM categorias WHERE tipo = %s"
+            self.cursor.execute(sql, (tipo,))
+        else:
+            sql = "SELECT id, nome, tipo FROM categorias"
+            self.cursor.execute(sql)
         return self.cursor.fetchall()
 
     def close(self):
