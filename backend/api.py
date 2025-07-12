@@ -5,6 +5,7 @@ from datetime import date, datetime
 from backend.database import Database
 from backend.external_apis import get_currency_rates, get_stock_quotes, get_esports_games
 
+
 app = FastAPI()
 db = Database()
 
