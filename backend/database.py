@@ -7,7 +7,7 @@ class Database:
         self.conn = psycopg2.connect(
             dbname="gestao_financeira",
             user="postgres",
-            password="161011",  # Substitua por sua senha do PostgreSQL
+            password="161011",  
             host="localhost",
             port="5432"
         )
