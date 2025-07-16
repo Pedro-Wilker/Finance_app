@@ -33,39 +33,63 @@ class CadastroScreen(ctk.CTkFrame):
         self.message_label.pack(pady=5)
 
     def show_etapa2(self):
+        nome = self.nome_entry.get().strip()
+        idade = self.idade_entry.get().strip()
+        email = self.email_entry.get().strip()
+        senha = self.senha_entry.get().strip()
+
+        if not all([nome, idade, email, senha]):
+            self.message_label.configure(text="Erro: Preencha todos os campos.", text_color="red")
+            return
+        if "@" not in email or "." not in email:
+            self.message_label.configure(text="Erro: Email inválido.", text_color="red")
+            return
         try:
-            self.nome = self.nome_entry.get()
-            self.idade = int(self.idade_entry.get())
-            self.email = self.email_entry.get()
-            self.senha = self.senha_entry.get()
-            if not all([self.nome, self.idade, self.email, self.senha]):
-                self.message_label.configure(text="Erro: Preencha todos os campos.", text_color="red")
+            self.idade = int(idade)
+            if self.idade <= 0:
+                self.message_label.configure(text="Erro: Idade deve ser maior que zero.", text_color="red")
                 return
-
-            for widget in self.winfo_children():
-                widget.destroy()
-
-            ctk.CTkLabel(self, text="Cadastro - Etapa 2", font=("Roboto", 24, "bold")).pack(pady=20)
-            ctk.CTkLabel(self, text="Número", font=("Roboto", 16)).pack(pady=5)
-            self.numero_entry = ctk.CTkEntry(self, placeholder_text="Número", width=400, height=40, corner_radius=10)
-            self.numero_entry.pack(pady=10)
-            ctk.CTkLabel(self, text="Salário", font=("Roboto", 16)).pack(pady=5)
-            self.salario_entry = ctk.CTkEntry(self, placeholder_text="Salário", width=400, height=40, corner_radius=10)
-            self.salario_entry.pack(pady=10)
-            ctk.CTkLabel(self, text="Profissão", font=("Roboto", 16)).pack(pady=5)
-            self.profissao_entry = ctk.CTkEntry(self, placeholder_text="Profissão", width=400, height=40, corner_radius=10)
-            self.profissao_entry.pack(pady=10)
-            ctk.CTkButton(self, text="Finalizar", command=self.finalizar_cadastro, width=200, height=40, corner_radius=10, font=("Roboto", 16)).pack(pady=15)
-            self.message_label = ctk.CTkLabel(self, text="", font=("Roboto", 14))
-            self.message_label.pack(pady=5)
         except ValueError:
-            self.message_label.configure(text="Erro: Idade deve ser um número.", text_color="red")
+            self.message_label.configure(text="Erro: Idade deve ser um número inteiro.", text_color="red")
+            return
+
+        self.nome = nome
+        self.email = email
+        self.senha = senha
+
+        for widget in self.winfo_children():
+            widget.destroy()
+
+        ctk.CTkLabel(self, text="Cadastro - Etapa 2", font=("Roboto", 24, "bold")).pack(pady=20)
+        ctk.CTkLabel(self, text="Número", font=("Roboto", 16)).pack(pady=5)
+        self.numero_entry = ctk.CTkEntry(self, placeholder_text="Número", width=400, height=40, corner_radius=10)
+        self.numero_entry.pack(pady=10)
+        ctk.CTkLabel(self, text="Salário", font=("Roboto", 16)).pack(pady=5)
+        self.salario_entry = ctk.CTkEntry(self, placeholder_text="Salário", width=400, height=40, corner_radius=10)
+        self.salario_entry.pack(pady=10)
+        ctk.CTkLabel(self, text="Profissão", font=("Roboto", 16)).pack(pady=5)
+        self.profissao_entry = ctk.CTkEntry(self, placeholder_text="Profissão", width=400, height=40, corner_radius=10)
+        self.profissao_entry.pack(pady=10)
+        ctk.CTkButton(self, text="Finalizar", command=self.finalizar_cadastro, width=200, height=40, corner_radius=10, font=("Roboto", 16)).pack(pady=15)
+        self.message_label = ctk.CTkLabel(self, text="", font=("Roboto", 14))
+        self.message_label.pack(pady=5)
 
     def finalizar_cadastro(self):
+        numero = self.numero_entry.get().strip() or None
+        salario = self.salario_entry.get().strip() or None
+        profissao = self.profissao_entry.get().strip() or None
+
+        if salario:
+            try:
+                salario = float(salario)
+                if salario < 0:
+                    self.message_label.configure(text="Erro: Salário não pode ser negativo.", text_color="red")
+                    return
+            except ValueError:
+                self.message_label.configure(text="Erro: Salário deve ser um número.", text_color="red")
+                return
+
         try:
-            numero = self.numero_entry.get() or None
-            salario = float(self.salario_entry.get()) if self.salario_entry.get() else None
-            profissao = self.profissao_entry.get() or None
             response = requests.post("http://localhost:8000/usuarios/", json={
                 "nome": self.nome, "idade": self.idade, "email": self.email, "senha": self.senha,
                 "numero": numero, "salario": salario, "profissao": profissao
@@ -76,7 +100,13 @@ class CadastroScreen(ctk.CTkFrame):
             self.app.nome_usuario = self.nome
             self.message_label.configure(text="Cadastro concluído com sucesso!", text_color="green")
             self.app.show_main_screen()
-        except ValueError:
-            self.message_label.configure(text="Erro: Salário deve ser um número.", text_color="red")
+        except requests.exceptions.HTTPError as e:
+            if e.response.status_code == 422:
+                error_detail = e.response.json()
+                self.message_label.configure(text=f"Erro 422: {error_detail}", text_color="red")
+            elif e.response.status_code == 400:
+                self.message_label.configure(text=f"Erro: {e.response.json()['detail']}", text_color="red")
+            else:
+                self.message_label.configure(text=f"Erro: {str(e)}", text_color="red")
         except requests.exceptions.RequestException as e:
-            self.message_label.configure(text=f"Erro ao cadastrar: {str(e)}", text_color="red")
+            self.message_label.configure(text=f"Erro de conexão: {str(e)}", text_color="red")

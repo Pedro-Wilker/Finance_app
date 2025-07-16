@@ -1,28 +1,34 @@
 import customtkinter as ctk
 from PIL import Image
+import os
 
 class NavigationBar(ctk.CTkFrame):
     def __init__(self, parent, app):
-        super().__init__(parent, corner_radius=10, fg_color="#2B2B2B")
+        super().__init__(parent, height=50, fg_color="#333333")
         self.app = app
+        self.grid(row=0, column=0, sticky="ew")
         self.grid_columnconfigure((0, 1, 2, 3, 4, 5, 6), weight=1)
 
         buttons = [
-            ("Home", "assets/home.png", self.app.show_main_screen),
-            ("Transações", "assets/transacao.png", self.app.show_transacao_screen),
-            ("Custos Fixos", "assets/custos.png", self.app.show_custos_fixos_screen),
-            ("Apostas", "assets/apostas.png", self.app.show_apostas_screen),
-            ("Relatório", "assets/relatorio.png", self.app.show_relatorio_screen),
-            ("Resumo", "assets/resumo.png", self.app.show_resumo_screen),
-            ("Investimentos", "assets/investimentos.png", self.app.show_investimentos_screen)
+            ("Home", self.app.show_home_screen, "home.png"),
+            ("Transações", self.app.show_transacao_screen, "transacao.png"),
+            ("Custos Fixos", self.app.show_custos_fixos_screen, "custos.png"),
+            ("Apostas", self.app.show_apostas_screen, "apostas.png"),
+            ("Investimentos", self.app.show_investimentos_screen, "investimentos.png"),
+            ("Relatório", self.app.show_relatorio_screen, "relatorio.png"),
+            ("Resumo", self.app.show_resumo_screen, "resumo.png"),
         ]
 
-        for i, (text, icon_path, command) in enumerate(buttons):
-            icon = ctk.CTkImage(Image.open(icon_path), size=(30, 30))
+        for i, (text, command, icon_name) in enumerate(buttons):
+            icon_path = os.path.join("gui", "assets", icon_name)
+            try:
+                icon = ctk.CTkImage(Image.open(icon_path), size=(30, 30))
+            except FileNotFoundError:
+                print(f"Ícone não encontrado: {icon_path}. Usando botão sem ícone.")
+                icon = None
             btn = ctk.CTkButton(
-                self, text="", image=icon, command=command,
-                width=60, height=60, corner_radius=15, fg_color="#3B3B3B",
-                hover_color="#4CAF50"
+                self, text=text, image=icon, compound="left",
+                command=command, width=150, height=40,
+                corner_radius=10, font=("Roboto", 14)
             )
             btn.grid(row=0, column=i, padx=5, pady=5)
-            ctk.CTkLabel(self, text=text, font=("Roboto", 12)).grid(row=1, column=i, pady=2)
